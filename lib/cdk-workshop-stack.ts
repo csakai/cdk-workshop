@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda'
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as apigw from '@aws-cdk/aws-apigateway';
 
 export class CdkWorkshopStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -7,9 +8,14 @@ export class CdkWorkshopStack extends cdk.Stack {
 
     // defines an AWS Lambda resource
     const hello = new lambda.Function(this, 'HelloHandler', {
-      runtime: lambda.Runtime.NODEJS_10_X,
-      code: lambda.Code.fromAsset('lambda'),
-      handler: 'hello.handler'
+      runtime: lambda.Runtime.NODEJS_10_X, // exec env
+      code: lambda.Code.fromAsset('lambda'), // code loaded from lambda dir
+      handler: 'hello.handler' // file is "hello", function is "handler"
+    });
+
+    // defines APIGW REST API resource backed by hello fn
+    new apigw.LambdaRestApi(this, 'Endpoint', {
+      handler: hello
     });
   }
 }
